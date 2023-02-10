@@ -1,0 +1,19 @@
+---
+manifest_version: "1"
+name: tags
+integrity:
+  network_seed: ~
+  properties: ~
+  origin_time: 1676027016771823
+  zomes:
+    - name: tags_integrity
+      hash: ~
+      bundled: "../../../target/wasm32-unknown-unknown/release/tags_integrity.wasm"
+      dependencies: ~
+coordinator:
+  zomes:
+    - name: tags
+      hash: ~
+      bundled: "../../../target/wasm32-unknown-unknown/release/tags.wasm"
+      dependencies:
+        - name: tags_integrity
