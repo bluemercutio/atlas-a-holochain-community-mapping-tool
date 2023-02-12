@@ -11,8 +11,23 @@
 
   let client: AppAgentClient | undefined;
   let loading = true;
+  let showCreateTagModal = false;
 
   $: client, loading;
+
+  const openCreateTagModal = () => {
+    showCreateTagModal = true
+  }
+
+
+  const closeCreateTagModal =  (e, force: boolean = false) => {
+    const backdrop = document.querySelector('.backdrop')
+    const closeButton = document.querySelector('.close-button')
+    console.log(backdrop)
+    if (e.target === backdrop || e.target===closeButton || force) {
+    showCreateTagModal = false}
+  }
+
 
   onMount(async () => {
     // We pass '' as url because it will dynamically be replaced in launcher environments
@@ -24,6 +39,9 @@
     getClient: () => client,
   });
 </script>
+{#if showCreateTagModal}
+  <CreateTagItem  {closeCreateTagModal} />
+{/if}
 
 <main>
   {#if loading}
@@ -31,8 +49,9 @@
       <mwc-circular-progress indeterminate />
     </div>
   {:else}
+
     <div id="content" style="display: flex; flex-direction: column; flex: 1;">
-      <CreateTagItem></CreateTagItem>
+      <button on:click={openCreateTagModal}>Create Tag</button>
       <AllTags author={client.myPubKey}></AllTags>
     </div>
   {/if}
@@ -45,6 +64,7 @@
     max-width: 240px;
     margin: 0 auto;
   }
+  
 
   @media (min-width: 640px) {
     main {
