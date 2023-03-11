@@ -56,9 +56,9 @@ async function fetchTagItems() {
 <span>No tag items found for this author.</span>
 {:else}
 <div style="display: flex; flex-direction: column">
+  <h2>My Tags</h2>
   {#each hashes as hash}
     <div style="margin-bottom: 8px;">
-      <h2>My Tags</h2>
       <TagItemDetail tagItemHash={hash}  on:tag-item-deleted={() => fetchTagItems()}></TagItemDetail>
     </div>
   {/each}
