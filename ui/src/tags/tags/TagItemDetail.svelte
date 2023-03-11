@@ -122,15 +122,9 @@
       <span style="margin-right: 4px"><strong>Name:</strong></span>
       <span style="white-space: pre-line">{tagItem.name}</span>
     </div>
-
     <div style="display: flex; flex-direction: row; margin-bottom: 16px">
       <span style="margin-right: 4px"><strong>Description:</strong></span>
       <span style="white-space: pre-line">{tagItem.description}</span>
-    </div>
-
-    <div style="display: flex; flex-direction: row; margin-bottom: 16px">
-      <span style="margin-right: 4px"><strong>Coordinates:</strong></span>
-      <span style="white-space: pre-line">{tagItem.coordinates}</span>
     </div>
     <div style="display: flex; flex-direction: row; margin-bottom: 16px">
       <span style="margin-right: 4px"><strong>Latitude:</strong></span>

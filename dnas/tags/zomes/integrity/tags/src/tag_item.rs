@@ -4,7 +4,6 @@ use hdi::prelude::*;
 pub struct TagItem {
     pub name: String,
     pub description: String,
-    pub coordinates: String,
     pub latitude: String,
     pub longitude: String,
 }

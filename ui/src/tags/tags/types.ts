@@ -43,10 +43,7 @@ export type EntryTypes = { type: "TagItem" } & TagItem;
 
 export interface TagItem {
   name: string;
-
   description: string;
-
-  coordinates: string;
   latitude: string;
   longitude: string;
 }

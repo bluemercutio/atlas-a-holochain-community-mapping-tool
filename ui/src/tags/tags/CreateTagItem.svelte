@@ -23,24 +23,23 @@
 
   let name: string | undefined;
   let description: string | undefined;
-  let coordinates: string | undefined;
   let latitude: string | undefined;
   let longitude: string | undefined;
 
   let errorSnackbar: Snackbar;
 
-  $: name, description, coordinates;
+  $: name, description;
   $: isTagItemValid =
     true &&
     name !== undefined &&
     description !== undefined &&
-    coordinates !== undefined;
+    latitude !== undefined &&
+    longitude !== undefined;
 
   async function createTagItem(e) {
     const tagItemEntry: TagItem = {
       name: name!,
       description: description!,
-      coordinates: coordinates!,
       latitude: latitude!,
       longitude: longitude!,
     };
@@ -92,18 +91,6 @@
           required
         />
       </div>
-
-      <div style="margin-bottom: 16px">
-        <mwc-textarea
-          outlined
-          label="Coordinates"
-          on:input={(e) => {
-            coordinates = e.target.value;
-          }}
-          required
-        />
-      </div>
-     
       <div style="margin-bottom: 16px">
         <mwc-textarea
           outlined
