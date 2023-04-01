@@ -1,49 +1,61 @@
 <script lang="ts">
-  import AllTags from "./tags/tags/AllTags.svelte";
-  import CreateTagItem from "./tags/tags/CreateTagItem.svelte";
+  import AllTags from "./routes/tags/AllTags.svelte";
+  import CreateTagItem from "./routes/tags/CreateTagItem.svelte";
   import { onMount, setContext } from "svelte";
   import type { ActionHash, AppAgentClient } from "@holochain/client";
   import { AppAgentWebsocket } from "@holochain/client";
   import "@material/mwc-circular-progress";
+  import Map from "./components/Map.svelte";
 
   import { clientContext } from "./contexts";
   import TopBar from "./components/TopBar.svelte";
+  import Footer from "./components/Footer.svelte";
+  import { getCurrentProfile } from "./client";
+
+  import { mapState } from "./store/store";
+  import type { Coordinates } from "./store/types";
+
+
 
   let client: AppAgentClient | undefined;
   let loading = true;
-  let showCreateTagModal = false;
+  let profile : boolean
+  let showMapModal: boolean;
+  let coordinates: Coordinates;
 
-  $: client, loading;
-
-  const openCreateTagModal = () => {
-    showCreateTagModal = true;
-  };
-
-  const closeCreateTagModal = (e, force: boolean = false) => {
-    const backdrop = document.querySelector(".backdrop");
-    const closeButton = document.querySelector(".close-button");
-    console.log(backdrop);
-    if (e.target === backdrop || e.target === closeButton || force) {
-      showCreateTagModal = false;
-    }
-  };
+  $: client, loading, profile, showMapModal, coordinates;
 
   onMount(async () => {
     // We pass '' as url because it will dynamically be replaced in launcher environments
     client = await AppAgentWebsocket.connect("", "atlas");
+    profile = await checkForProfile()
     loading = false;
   });
 
   setContext(clientContext, {
     getClient: () => client,
   });
+
+  const checkForProfile = async () => {
+    const res = await getCurrentProfile(client.myPubKey, client)
+    if  (!(res instanceof Error)){
+      return true
+    } 
+    return false
+  }
+  mapState.subscribe((value) => {
+    showMapModal = value.showModal;
+    coordinates = value.coordinates;
+  });
+
 </script>
 
-{#if showCreateTagModal}
-  <CreateTagItem {closeCreateTagModal} />
-{/if}
-
 <main>
+  {#if showMapModal}
+  <!-- smits -34.264478833198794, 18.464277119200723 -->
+  <!-- ct -33.94894079496996, 18.396664895093583 -->
+  <Map author={client.myPubKey} defaultCoordinates={$mapState.coordinates} />
+{/if}
   {#if loading}
     <div
       style="display: flex; flex: 1; align-items: center; justify-content: center"
@@ -52,17 +64,19 @@
     </div>
   {:else}
     <div id="content" style="display: flex; flex-direction: column; flex: 1;">
-      <TopBar author={client.myPubKey}/>
+      <TopBar author={client.myPubKey} />
       <AllTags author={client.myPubKey} />
+      <Footer hasProfile={profile} owner={client.myPubKey}  />
     </div>
   {/if}
+  
 </main>
 
 <style>
   main {
     text-align: center;
     padding: 1em;
-    max-width: 240px;
+    /* max-width: 240px; */
     margin: 0 auto;
   }
 

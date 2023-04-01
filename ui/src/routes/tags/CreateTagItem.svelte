@@ -1,4 +1,4 @@
-<script lang="ts">
+<!-- <script lang="ts">
   import { createEventDispatcher, getContext } from "svelte";
   import type {
     AppAgentClient,
@@ -124,7 +124,6 @@
         label="Close"
         on:click={closeCreateTagModal}
       />
-      <!-- <button class="close-button"  on:click={closeCreateTagModal}>Close</button> -->
     </div>
   </div>
 </div>
@@ -154,4 +153,71 @@
     border: 1px solid #ccc;
     border-radius: 2px;
   }
-</style>
+</style> -->
+<script lang="ts">
+  import GenericModal from "../../components/Modal.svelte";
+  import type { AppAgentClient } from "@holochain/client";
+  import type { TagItem } from "./types";
+  import { createEventDispatcher } from 'svelte';
+
+  export let client: AppAgentClient;
+  export let showModal = false;
+  const dispatch = createEventDispatcher();
+  
+
+  $: showModal ;
+
+
+  const fields = [
+    { label: "Name", required: true },
+    { label: "Description", required: true },
+    { label: "Latitude", required: true },
+    { label: "Longitude", required: true },
+  ];
+
+  function updateParent() {
+    dispatch('child-update', showModal);
+  }
+
+  async function createTagItem(fieldValues) {
+    const tagItemEntry: TagItem = {
+      name: fieldValues["Name"],
+      description: fieldValues["Description"],
+      latitude: fieldValues["Latitude"],
+      longitude: fieldValues["Longitude"],
+    };
+
+    const record = await client.callZome({
+      cap_secret: null,
+      role_name: "tags",
+      zome_name: "tags",
+      fn_name: "create_tag_item",
+      payload: tagItemEntry,
+    });
+
+    return {
+      tagItemHash: record.signed_action.hashed.hash,
+    };
+  }
+
+  function closeCreateTagModal(e, success = false) {
+    if (e.target.className === "backdrop" || success) {
+      console.log('Clicked. success: ', success, 'classname: ', e.target.className)
+      showModal = false;
+
+      updateParent()
+
+    }
+  }
+</script>
+
+
+{#if showModal}
+  <GenericModal
+    title="Create a Tag"
+    fields={fields}
+    createItemFunction={createTagItem}
+    closeFunction={closeCreateTagModal}
+    itemType="TagItem"
+  />
+{/if}

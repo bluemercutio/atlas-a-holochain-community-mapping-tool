@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { onMount } from "svelte";
+  import { beforeUpdate, onMount } from "svelte";
   import L from "leaflet";
   import "leaflet/dist/leaflet.css";
   import { getContext } from "svelte";
@@ -11,15 +11,17 @@
     ActionHash,
   } from "@holochain/client";
   import { clientContext } from "../contexts";
-  import type { TagItem, TagsSignal } from "../tags/tags/types";
+  import type { TagItem, TagsSignal } from "../routes/tags/types";
   import "@material/mwc-button";
   import "@material/mwc-snackbar";
   import type { Snackbar } from "@material/mwc-snackbar";
   import "@material/mwc-textfield";
   import "@material/mwc-circular-progress";
   import "@material/mwc-textarea";
+  import type { Coordinates } from "../store/types";
+  import { mapState } from "../store/store";
   export let author: AgentPubKey;
-  export let defaultCoordinates: [number, number];
+  export let defaultCoordinates: Coordinates;
 
   let client: AppAgentClient = (getContext(clientContext) as any).getClient();
 
@@ -33,10 +35,22 @@
 
   let editing = false;
 
-  $: editing, error, loading, record, tagItem, hashes, tags, error, leafletMap;
- 
+  $: editing,
+    error,
+    loading,
+    record,
+    tagItem,
+    hashes,
+    tags,
+    error,
+    leafletMap,
+    defaultCoordinates;
 
   let tags: TagItem[] = [];
+
+  // mapState.subscribe((value) => {
+  //   coordinates = value.coordinates;
+  // });
 
   async function fetchTagItems() {
     try {
@@ -48,7 +62,7 @@
         payload: author,
       });
       hashes = records.map((r) => r.signed_action.hashed.hash);
-      
+
       hashes.map(async (hash) => {
         let item = await fetchTagItem(hash);
         console.log("ITEM", item);
@@ -77,9 +91,12 @@
           lon_str: tagItem.latitude,
           lon_int: parseFloat(tagItem.longitude),
         });
-        console.log('TAG ITEM: ', tagItem)
-        console.log(   "TESTING", parseFloat(tagItem.latitude),
-          parseFloat(tagItem.longitude),)
+        console.log("TAG ITEM: ", tagItem);
+        console.log(
+          "TESTING",
+          parseFloat(tagItem.latitude),
+          parseFloat(tagItem.longitude)
+        );
 
         L.marker([
           parseFloat(tagItem.latitude),
@@ -115,7 +132,7 @@
     console.log("TAGS", tags);
 
     // Initialize the Leaflet.js map
-    leafletMap = L.map("map").setView(defaultCoordinates, 16);
+    leafletMap = L.map("map").setView($mapState.coordinates, 16);
 
     // Add a tile layer
     L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
@@ -124,6 +141,13 @@
 
     // Iterate over the response data and add a marker for each tag
   });
+
+  $: if (leafletMap && $mapState.coordinates) {
+    leafletMap.setView($mapState.coordinates, 16);
+  }
+
+
+
 </script>
 
 {#if loading}

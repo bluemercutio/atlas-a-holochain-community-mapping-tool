@@ -1,6 +1,5 @@
 <script lang="ts">
-  import CreateTagItem from "../tags/tags/CreateTagItem.svelte";
-  import Map from "./Map.svelte";
+  import CreateTagItem from "../routes/tags/CreateTagItem.svelte";
   import type {
     EntryHash,
     Record,
@@ -9,62 +8,67 @@
     AppAgentClient,
     NewEntryAction,
   } from "@holochain/client";
+  import { clientContext } from "../contexts";
+  import { getContext } from "svelte";
+  import { mapState } from "../store/store";
+  import {
+    closeMapModal,
+    openMapModal,
+    openMapModalAndMoveTo,
+  } from "../store/actions";
+
 
   let showCreateTagModal = false;
-  let showMapModal = false;
-  export let author: AgentPubKey;
-  let showHelp = false
+  let showMapModal: boolean;
+  let client: AppAgentClient = (getContext(clientContext) as any).getClient();
+  $: showMapModal
 
+
+  mapState.subscribe((value) => {
+    showMapModal = value.showModal;
+  });
+
+  function handleModalUpdate(event) {
+    showCreateTagModal = event.detail;
+  }
   const openCreateTagModal = () => {
-    showCreateTagModal = true;
-    showMapModal = false;
+    showCreateTagModal = !showCreateTagModal;
   };
-  const openMapModal = () => {
-    showMapModal = true;
-  };
-
-  const showHelpDivs = () => {
-    showHelp = !showHelp
+  const toggleMapModal = () => {
+    showMapModal ? closeMapModal() : openMapModal();
   };
 
-  const closeCreateTagModal = (e, force: boolean = false) => {
-    const backdrop = document.querySelector(".backdrop");
-    const closeButton = document.querySelector(".close-button");
-    console.log(backdrop);
-    if (e.target === backdrop || e.target === closeButton || force) {
-      showCreateTagModal = false;
-    }
-  };
-  const closeMapModal = (e: any, force: boolean = false): void => {
-    const backdrop = document.querySelector(".backdrop");
-    const closeButton = document.querySelector(".close-button");
-    console.log(backdrop);
-    if (e.target === backdrop || e.target === closeButton || force) {
-      showMapModal = false;
-    }
-  };
+  // const closeCreateTagModal = (e, force: boolean = false) => {
+  //   const backdrop = document.querySelector(".backdrop");
+  //   const closeButton = document.querySelector(".close-button");
+  //   console.log(backdrop);
+  //   if (e.target === backdrop || e.target === closeButton || force) {
+  //     showCreateTagModal = false;
+  //   }
+  // };
 </script>
 
-{#if showMapModal}
-<!-- smits -34.264478833198794, 18.464277119200723 -->
-<!-- ct -33.94894079496996, 18.396664895093583 -->
-  <Map {author} defaultCoordinates={[ -34.264478833198794, 18.464277119200723 ]}/>  
-{/if}
 
-{#if showCreateTagModal}
-  <CreateTagItem {closeCreateTagModal} />
-{/if}
+
+<CreateTagItem
+  on:child-update={handleModalUpdate}
+  {client}
+  showModal={showCreateTagModal}
+/>
 
 <div class="top-bar">
   <h3>ATLAS</h3>
   <div>
     <button on:click={() => openCreateTagModal()}>Create Tag</button>
-    <button on:click={() => openMapModal()}>Map</button>
-
+    <button on:click={() => toggleMapModal()}>Map</button>
   </div>
 </div>
 
 <style>
+  /* body {
+    margin: 0;
+    padding: 0;
+  } */
   .top-bar {
     display: flex;
     justify-content: space-between;
@@ -77,6 +81,7 @@
     position: sticky;
     top: 0;
     z-index: 10;
+    width: 100%;
   }
   .top-bar button {
     padding: 8px 15px;

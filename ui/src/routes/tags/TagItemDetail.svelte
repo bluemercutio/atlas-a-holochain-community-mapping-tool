@@ -16,6 +16,7 @@
   import "@material/mwc-snackbar";
   import "@material/mwc-icon-button";
   import EditTagItem from "./EditTagItem.svelte";
+  import { openMapModalAndMoveTo } from "../../store/actions";
 
   const dispatch = createEventDispatcher();
 
@@ -76,6 +77,20 @@
       errorSnackbar.show();
     }
   }
+
+  const handleMapModal = (
+    e: MouseEvent & {
+      currentTarget: EventTarget & HTMLButtonElement;
+    }
+  ) => {
+
+    e.preventDefault();
+    console.log('handleMapModal')
+    openMapModalAndMoveTo([
+      parseFloat(tagItem.latitude),
+      parseFloat(tagItem.longitude),
+    ]);
+  };
 </script>
 
 <mwc-snackbar bind:this={errorSnackbar} leading />
@@ -135,8 +150,7 @@
       <span style="white-space: pre-line">{tagItem.longitude}</span>
     </div>
     <div style="display: flex; flex-direction: row; margin-bottom: 16px">
-      <button on:click={() => null}>Show on Map</button>
-
+      <button on:click={(e) => handleMapModal(e)}>Show on Map</button>
     </div>
   </div>
 {/if}
