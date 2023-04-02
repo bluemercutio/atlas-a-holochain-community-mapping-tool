@@ -1,6 +1,10 @@
 import { mapState } from "./store";
 import { SMITS } from "./constants";
-import type { Coordinates } from "./types";
+import type { Coordinates, DisplayMode } from "./types";
+import {
+  darkDisplayMode,
+  defaultDisplayMode,
+} from "../components/map/map.constants";
 
 export const openMapModal = (): void => {
   mapState.update((state) => ({
@@ -23,11 +27,21 @@ export const moveMapTo = (coordinates: Coordinates): void => {
   }));
 };
 
-//Higher Order Functions
-
-export const openMapModalAndMoveTo = (coordinates: Coordinates): void => {
+export const openMapModalAndMoveTo = (
+  coordinates: Coordinates,
+  display_mode: DisplayMode
+): void => {
   mapState.set({
     showModal: true,
     coordinates,
+    display_mode: display_mode,
   });
+};
+
+export const toggleDisplayMode = () => {
+  mapState.update((state) => ({
+    ...state,
+    display_mode:
+      state.display_mode.type === "DARK" ? defaultDisplayMode : darkDisplayMode,
+  }));
 };

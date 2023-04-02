@@ -1,10 +1,12 @@
 <script lang="ts">
   import CreateProfile from "../routes/profiles/CreateProfile.svelte";
   import CreateTagItem from "../routes/profiles/CreateProfile.svelte";
+  import { mdiAccountCircle } from "@mdi/js";
+  import type { Profile } from "../routes/profiles/types";
 
   let showCreateProfileModal = false;
 
-  export let hasProfile = false;
+  export let profile: Profile;
   export let owner: Uint8Array;
 
   function createProfile() {
@@ -27,7 +29,6 @@
     }
   };
 </script>
-
 <footer>
   {#if showCreateProfileModal}
     <CreateProfile
@@ -37,8 +38,14 @@
     />
   {/if}
 
-  {#if hasProfile}
-    <img src="profile-icon.png" alt="Profile Icon" />
+  {#if profile}
+    <div class="profile-container">
+      <svg class="profile-icon" viewBox="0 0 24 24">
+        <path d={mdiAccountCircle} />
+      </svg>
+      <span class="separator">|</span>
+      <p class="username">{profile.user_name}</p>
+    </div>
   {:else}
     <button on:click={openCreateTagModal}>Create Profile</button>
   {/if}
@@ -68,8 +75,22 @@
     cursor: pointer;
   }
 
-  img {
-    width: 30px;
-    height: 30px;
+  .profile-container {
+    display: flex;
+    align-items: center;
+  }
+
+  .profile-icon {
+    width: 24px;
+    height: 24px;
+  }
+
+  .separator {
+    margin: 0 5px;
+    color: rgba(0, 0, 0, 0.5);
+  }
+
+  .username {
+    margin: 0;
   }
 </style>

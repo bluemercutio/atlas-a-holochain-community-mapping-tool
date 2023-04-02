@@ -17,6 +17,7 @@
   import "@material/mwc-icon-button";
   import EditTagItem from "./EditTagItem.svelte";
   import { openMapModalAndMoveTo } from "../../store/actions";
+  import { mapState } from "../../store/store";
 
   const dispatch = createEventDispatcher();
 
@@ -83,22 +84,19 @@
       currentTarget: EventTarget & HTMLButtonElement;
     }
   ) => {
-
     e.preventDefault();
-    console.log('handleMapModal')
+    console.log("handleMapModal");
     openMapModalAndMoveTo([
       parseFloat(tagItem.latitude),
       parseFloat(tagItem.longitude),
-    ]);
+    ], $mapState.display_mode);
   };
 </script>
 
 <mwc-snackbar bind:this={errorSnackbar} leading />
 
 {#if loading}
-  <div
-    style="display: flex; flex: 1; align-items: center; justify-content: center"
-  >
+  <div class="loading-container">
     <mwc-circular-progress indeterminate />
   </div>
 {:else if error}
@@ -116,41 +114,124 @@
     }}
   />
 {:else}
-  <div style="display: flex; flex-direction: column">
-    <div style="display: flex; flex-direction: row">
-      <span style="flex: 1" />
-      <mwc-icon-button
-        style="margin-left: 8px"
-        icon="edit"
-        on:click={() => {
-          editing = true;
-        }}
-      />
-      <mwc-icon-button
-        style="margin-left: 8px"
-        icon="delete"
-        on:click={() => deleteTagItem()}
-      />
+  <div class="tag-item-container">
+    <div class="tag-item-header">
+      <h3>{tagItem.name}</h3>
+      <div class="icon-buttons">
+        <mwc-icon-button
+          class="icon-button"
+          icon="edit"
+          on:click={() => {
+            editing = true;
+          }}
+        />
+        <mwc-icon-button
+          class="icon-button"
+          icon="delete"
+          on:click={() => deleteTagItem()}
+        />
+      </div>
     </div>
-
-    <div style="display: flex; flex-direction: row; margin-bottom: 16px">
-      <span style="margin-right: 4px"><strong>Name:</strong></span>
-      <span style="white-space: pre-line">{tagItem.name}</span>
+    <div class="tag-item-row">
+      <span class="value">{tagItem.description}</span>
     </div>
-    <div style="display: flex; flex-direction: row; margin-bottom: 16px">
-      <span style="margin-right: 4px"><strong>Description:</strong></span>
-      <span style="white-space: pre-line">{tagItem.description}</span>
+    <div class="tag-item-row">
+      <div class="coordinates">
+        <span class="label">Coordinates</span>
+      </div>
     </div>
-    <div style="display: flex; flex-direction: row; margin-bottom: 16px">
-      <span style="margin-right: 4px"><strong>Latitude:</strong></span>
-      <span style="white-space: pre-line">{tagItem.latitude}</span>
+    <div class="tag-item-row">
+      <div class="coordinates">
+        <span class="value">{tagItem.latitude}</span>
+      </div>
+      <div class="spacer">|</div>
+      <div class="coordinates">
+        <span class="value">{tagItem.longitude}</span>
+      </div>
     </div>
-    <div style="display: flex; flex-direction: row; margin-bottom: 16px">
-      <span style="margin-right: 4px"><strong>Longitude:</strong></span>
-      <span style="white-space: pre-line">{tagItem.longitude}</span>
-    </div>
-    <div style="display: flex; flex-direction: row; margin-bottom: 16px">
-      <button on:click={(e) => handleMapModal(e)}>Show on Map</button>
+    <div class="tag-item-row">
+      <button class="show-map-button" on:click={(e) => handleMapModal(e)}>
+        Show on Map
+      </button>
     </div>
   </div>
 {/if}
+
+<style>
+  .loading-container {
+    display: flex;
+    flex: 1;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .tag-item-container {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .tag-item-header {
+    display: flex;
+    flex-direction: row;
+  }
+
+  .spacer {
+
+    flex: 2;
+  }
+
+  .icon-button {
+    margin-left: 8px;
+  }
+
+  .tag-item-row {
+    display: flex;
+    flex-direction: row;
+    margin-bottom: 16px;
+  }
+
+  .label {
+    margin-right: 4px;
+    font-family: "Roboto", sans-serif;
+  }
+
+  .value {
+    white-space: pre-line;
+    font-family: "Roboto Mono", monospace;
+    font-size: 10px;
+  }
+
+  .show-map-button {
+    border: 1px solid black;
+    padding: 4px 8px;
+    background-color: transparent;
+    font-family: "Roboto", sans-serif;
+    font-size: 14px;
+    cursor: pointer;
+  }
+
+  .show-map-button:hover {
+    background-color: rgba(0, 0, 0, 0.1);
+  }
+  .tag-item-header {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+  }
+
+  .icon-buttons {
+    display: flex;
+    flex-direction: row;
+  }
+
+  /* Update the styles for .coordinates */
+  .coordinates {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    flex: 1;
+    align-items: start;
+  }
+</style>

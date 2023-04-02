@@ -22,5 +22,10 @@
   "engines": {
     "npm": ">=7.0.0"
   },
-  "dependencies": {}
+  "dependencies": {
+    "@mdi/js": "^7.2.96",
+    "@types/googlemaps": "^3.43.3",
+    "svelte-icons": "^2.1.0",
+    "svelte-material-icons": "^3.0.4"
+  }
 }
