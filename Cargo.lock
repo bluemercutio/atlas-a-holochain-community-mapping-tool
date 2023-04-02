@@ -237,6 +237,23 @@ dependencies = [
 ]
 
 [[package]]
+name = "communities"
+version = "0.0.1"
+dependencies = [
+ "communities_integrity",
+ "hdk",
+ "serde",
+]
+
+[[package]]
+name = "communities_integrity"
+version = "0.0.1"
+dependencies = [
+ "hdi",
+ "serde",
+]
+
+[[package]]
 name = "constant_time_eq"
 version = "0.1.5"
 source = "registry+https://github.com/rust-lang/crates.io-index"

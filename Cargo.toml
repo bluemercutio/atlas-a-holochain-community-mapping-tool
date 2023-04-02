@@ -12,6 +12,12 @@ hdi = "=0.2.1"
 hdk = "=0.1.1"
 serde = "1"
 
+[workspace.dependencies.communities]
+path = "dnas/tags/zomes/coordinator/communities"
+
+[workspace.dependencies.communities_integrity]
+path = "dnas/tags/zomes/integrity/communities"
+
 [workspace.dependencies.profiles]
 path = "dnas/tags/zomes/coordinator/profiles"
 

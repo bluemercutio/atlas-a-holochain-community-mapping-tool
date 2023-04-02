@@ -16,6 +16,7 @@
   },
   "devDependencies": {
     "@holochain-playground/cli": "^0.1.0",
+    "@types/leaflet-geosearch": "^3.0.0",
     "concurrently": "^6.2.1",
     "rimraf": "^3.0.2"
   },
@@ -25,6 +26,8 @@
   "dependencies": {
     "@mdi/js": "^7.2.96",
     "@types/googlemaps": "^3.43.3",
+    "leaflet-geosearch": "^3.7.0",
+    "leaflet-search": "^3.0.9",
     "svelte-icons": "^2.1.0",
     "svelte-material-icons": "^3.0.4"
   }
