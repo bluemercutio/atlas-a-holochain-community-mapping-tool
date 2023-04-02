@@ -1,4 +1,4 @@
-import type { DisplayMode } from "../../store/types";
+import type { DisplayMode } from "../../store/map/type.mapState";
 
 export const defaultDisplayMode: DisplayMode = {
   type: "DEFAULT",

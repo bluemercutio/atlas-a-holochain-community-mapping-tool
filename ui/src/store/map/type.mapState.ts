@@ -1,10 +1,13 @@
 export interface MapState {
-  showModal: boolean;
+  showMapModal: boolean;
   coordinates: Coordinates;
   display_mode: DisplayMode;
 }
 
-export type Coordinates = [number, number];
+export interface Coordinates {
+  latitude: number;
+  longitude: number;
+}
 
 export type DisplayModeType = "DARK" | "DEFAULT";
 

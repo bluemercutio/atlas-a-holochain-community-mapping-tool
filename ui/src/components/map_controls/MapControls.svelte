@@ -2,8 +2,9 @@
   import { createEventDispatcher } from "svelte";
   import MdRadioButtonUnchecked from "svelte-icons/md/MdRadioButtonUnchecked.svelte";
   import MdRadioButtonChecked from "svelte-icons/md/MdRadioButtonChecked.svelte";
-  import { toggleDisplayMode } from "../../store/actions";
-  import type { DisplayMode } from "../../store/types";
+  import { toggleDisplayMode } from "../../store/map/actions.mapState";
+  import type { DisplayMode } from "../../store/map/type.mapState";
+  import GeoSearch from "../geosearch/GeoSearch.svelte";
 
   export let displayMode: DisplayMode;
 
@@ -26,6 +27,7 @@
         </div>
       {/if}
     </button>
+    <GeoSearch />
   </div>
 </div>
 
@@ -36,6 +38,7 @@
     align-items: center;
     width: 100%;
     padding: 5px;
+    z-index: 999; /* Ensure the map controls are displayed above the map but below the search results */
   }
 
   .mode-container {

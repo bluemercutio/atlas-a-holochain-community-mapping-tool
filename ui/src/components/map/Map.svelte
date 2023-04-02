@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { beforeUpdate, onMount } from "svelte";
+  import { onMount } from "svelte";
   import L from "leaflet";
   import "leaflet/dist/leaflet.css";
   import { getContext } from "svelte";
@@ -14,16 +14,19 @@
   import type { TagItem, TagsSignal } from "../../routes/tags/types";
   import "@material/mwc-button";
   import "@material/mwc-snackbar";
-  import type { Snackbar } from "@material/mwc-snackbar";
   import "@material/mwc-textfield";
   import "@material/mwc-circular-progress";
   import "@material/mwc-textarea";
-  import type { Coordinates, DisplayMode, DisplayModeType } from "../../store/types";
-  import { mapState } from "../../store/store";
-  import MdRadioButtonChecked from "svelte-icons/md/MdRadioButtonChecked.svelte";
-  import MdRadioButtonUnchecked from "svelte-icons/md/MdRadioButtonUnchecked.svelte";
-  import MapControls from "./MapControls.svelte";
+  import type {
+    Coordinates,
+    DisplayMode,
+    DisplayModeType,
+  } from "../../store/map/type.mapState";
+  import { mapState } from "../../store/map";
+  import MapControls from "../map_controls/MapControls.svelte";
   import { darkDisplayMode, defaultDisplayMode } from "./map.constants";
+  import { openCreateTagModal } from "../../store/tag/actions.createTag";
+  import { closeMapModal } from "../../store/map/actions.mapState";
   export let author: AgentPubKey;
   export let defaultCoordinates: Coordinates;
   export let displayMode: DisplayMode;
@@ -37,6 +40,7 @@
 
   let record: Record | undefined;
   let tagItem: TagItem | undefined;
+  let specialMarker;
 
   let editing = false;
 
@@ -51,13 +55,11 @@
     tags,
     error,
     leafletMap,
-    defaultCoordinates;
+    defaultCoordinates,
+    specialMarker;
 
   let tags: TagItem[] = [];
 
-  // mapState.subscribe((value) => {
-  //   coordinates = value.coordinates;
-  // });
   let currentTileLayer: L.TileLayer;
 
   function updateMapStyle(style: DisplayModeType) {
@@ -74,53 +76,10 @@
         attribution: darkDisplayMode.attribution,
       });
     }
-    console.log('CUrrent Tile Layer: ', currentTileLayer)
+    console.log("CUrrent Tile Layer: ", currentTileLayer);
 
     currentTileLayer.addTo(leafletMap);
   }
-
-  // function createMapStyleControl() {
-  //   const mapStyleControl = L.Control.extend({
-  //     options: {
-  //       position: "topright",
-  //     },
-
-  //     onAdd: function (map) {
-  //       const container = L.DomUtil.create("div", "map-style-control");
-  //       L.DomEvent.disableClickPropagation(container);
-
-  //       const defaultStyleBtn = L.DomUtil.create(
-  //         "button",
-  //         "map-style-btn",
-  //         container
-  //       );
-
-  //       // Add the icon and text for Default option
-  //       const colorLensIcon = new MdRadioButtonUnchecked({ target: defaultStyleBtn });
-  //       defaultStyleBtn.appendChild(document.createTextNode(" Default"));
-  //       L.DomEvent.on(defaultStyleBtn, "click", () =>
-  //         updateMapStyle("default")
-  //       );
-
-  //       const darkStyleBtn = L.DomUtil.create(
-  //         "button",
-  //         "map-style-btn",
-  //         container
-  //       );
-
-  //       // Add the icon and text for Dark option
-  //       const nightsStayIcon = new MdRadioButtonChecked({ target: darkStyleBtn });
-  //       darkStyleBtn.appendChild(document.createTextNode(" Dark"));
-  //       L.DomEvent.on(darkStyleBtn, "click", () =>
-  //         updateMapStyle("blackAndWhite")
-  //       );
-
-  //       return container;
-  //     },
-  //   });
-
-  //   return new mapStyleControl();
-  // }
 
   async function fetchTagItems() {
     try {
@@ -180,6 +139,63 @@
     }
   }
 
+  const createCustomMarker = (): L.Icon => {
+    return L.icon({
+      iconUrl: "/icons/circle-dashed-4-16.ico",
+      iconSize: [25, 25],
+      iconAnchor: [12, 41],
+      popupAnchor: [1, -34],
+      shadowSize: [41, 41],
+    });
+  };
+
+  const addSpecialMarker = (lat: number, lon: number) => {
+    if (specialMarker) {
+      leafletMap.removeLayer(specialMarker);
+    }
+    const customMarker = createCustomMarker();
+    specialMarker = L.marker([lat, lon], { icon: customMarker }).addTo(
+      leafletMap
+    );
+    // ... the rest of the function
+
+    const popupContent =
+      '<button id="createTagButton" style="cursor:pointer">Create Tag</button>';
+    const popup = L.popup({
+      closeButton: false,
+      className: "custom-popup",
+      autoClose: false,
+      closeOnClick: false,
+    }).setContent(popupContent);
+    specialMarker.bindPopup(popup);
+
+    specialMarker.on("mouseover", () => {
+      specialMarker.openPopup();
+    });
+
+    specialMarker.on("popupopen", () => {
+      const createTagButton = document.getElementById("createTagButton");
+      createTagButton.addEventListener("click", () => {
+        // Add your logic here for creating a tag
+        console.log("Create tag button clicked");
+        closeMapModal();
+        openCreateTagModal({ latitude: lat, longitude: lon });
+
+        specialMarker.closePopup(); // Close the popup when the button is clicked
+      });
+
+      // Close the popup when the user clicks outside it
+      leafletMap.on("click", () => {
+        specialMarker.closePopup();
+      });
+
+      // Set a 4-second timeout for the popup to disappear
+      setTimeout(() => {
+        specialMarker.closePopup();
+      }, 2000);
+    });
+  };
+
   onMount(async () => {
     await fetchTagItems();
     client.on("signal", (signal) => {
@@ -199,16 +215,42 @@
       hashes = [...hashes, payload.action.hashed.hash];
     });
 
-    console.log("TAGS", tags);
+    console.log("LEAFLET CONFIG", {
+      lat: $mapState.coordinates.latitude,
+      lng: $mapState.coordinates.longitude,
+    });
 
     // Initialize the Leaflet.js map
-    leafletMap = L.map("map").setView($mapState.coordinates, 16);
+    leafletMap = L.map("map").setView(
+      [$mapState.coordinates.latitude, $mapState.coordinates.longitude],
+      16
+    );
+
+    // Add a click event listener to the map
+    leafletMap.on("click", (e) => {
+      const { lat, lng } = e.latlng;
+      // if (specialMarker) {
+      //   specialMarker.setLatLng(e.latlng);
+      // } else {
+      //   addSpecialMarker(lat, lng);
+      // }
+      addSpecialMarker(lat, lng);
+    });
 
     updateMapStyle("DEFAULT");
   });
 
   $: if (leafletMap && $mapState.coordinates) {
-    leafletMap.setView($mapState.coordinates, 16);
+    leafletMap.setView(
+      [$mapState.coordinates.latitude, $mapState.coordinates.longitude],
+      16
+    );
+    if (defaultCoordinates.latitude && defaultCoordinates.longitude) {
+      addSpecialMarker(
+        defaultCoordinates.latitude,
+        defaultCoordinates.longitude
+      );
+    }
   }
   $: if (leafletMap && $mapState.display_mode) {
     updateMapStyle($mapState.display_mode.type);
@@ -227,15 +269,6 @@
 {/if}
 
 <style>
-  .map-style-control {
-    display: flex;
-    justify-content: space-between;
-    background-color: rgba(255, 255, 255, 0.8);
-    padding: 5px;
-    border-radius: 5px;
-    margin-top: 10px;
-    width: 100%;
-  }
   .loading-container {
     display: flex;
     flex: 1;
@@ -245,43 +278,5 @@
 
   .map-container {
     height: 600px;
-  }
-
-  .map-style-control {
-    background-color: rgba(255, 255, 255, 0.8);
-    padding: 5px;
-    border-radius: 5px;
-  }
-
-  .dropdown-btn {
-    display: block;
-    background-color: transparent;
-    border: none;
-    cursor: pointer;
-    padding: 5px;
-    font-size: 14px;
-  }
-
-  .dropdown-list {
-    display: none;
-  }
-
-  .map-style-btn {
-    display: flex;
-    align-items: center;
-    background-color: transparent;
-    border: none;
-    cursor: pointer;
-    padding: 5px;
-    font-size: 14px;
-    width: 100%;
-  }
-
-  .map-style-btn:hover {
-    background-color: rgba(0, 0, 0, 0.1);
-  }
-
-  .map-style-btn svg {
-    margin-right: 5px;
   }
 </style>

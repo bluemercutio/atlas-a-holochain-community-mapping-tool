@@ -69,7 +69,7 @@ async function createProfile() {
   import type { AppAgentClient, Record, AgentPubKey } from '@holochain/client';
   import { clientContext } from '../../contexts';
   import type { Profile } from './types';
-  import GenericModal from '../../components/Modal.svelte';
+  import GenericModal from '../../components/GenericModal.svelte';
   import { createEventDispatcher } from 'svelte';
 
   let client: AppAgentClient = (getContext(clientContext) as any).getClient();

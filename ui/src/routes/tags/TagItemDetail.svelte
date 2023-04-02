@@ -16,8 +16,8 @@
   import "@material/mwc-snackbar";
   import "@material/mwc-icon-button";
   import EditTagItem from "./EditTagItem.svelte";
-  import { openMapModalAndMoveTo } from "../../store/actions";
-  import { mapState } from "../../store/store";
+  import { openMapModalAndMoveTo } from "../../store/map/actions.mapState";
+  import { mapState } from "../../store/map";
 
   const dispatch = createEventDispatcher();
 
@@ -86,10 +86,13 @@
   ) => {
     e.preventDefault();
     console.log("handleMapModal");
-    openMapModalAndMoveTo([
-      parseFloat(tagItem.latitude),
-      parseFloat(tagItem.longitude),
-    ], $mapState.display_mode);
+    openMapModalAndMoveTo(
+      {
+        latitude: parseFloat(tagItem.latitude),
+        longitude: parseFloat(tagItem.longitude),
+      },
+      $mapState.display_mode
+    );
   };
 </script>
 
@@ -176,7 +179,6 @@
   }
 
   .spacer {
-
     flex: 2;
   }
 

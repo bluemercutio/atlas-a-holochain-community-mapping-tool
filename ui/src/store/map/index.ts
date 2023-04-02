@@ -1,9 +1,9 @@
 import { writable } from "svelte/store";
-import { SMITS } from "./constants";
-import type { MapState } from "./types";
+import { SMITS } from "./constants.mapState";
+import type { MapState } from "./type.mapState";
 
 const initialState: MapState = {
-  showModal: false,
+  showMapModal: false,
   coordinates: SMITS,
   display_mode: {
     type: "DEFAULT",

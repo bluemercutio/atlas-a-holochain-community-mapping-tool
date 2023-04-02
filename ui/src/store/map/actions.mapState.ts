@@ -1,22 +1,24 @@
-import { mapState } from "./store";
-import { SMITS } from "./constants";
-import type { Coordinates, DisplayMode } from "./types";
+import { mapState } from ".";
+import { SMITS } from "./constants.mapState";
+import type { Coordinates, DisplayMode } from "./type.mapState";
 import {
   darkDisplayMode,
   defaultDisplayMode,
-} from "../components/map/map.constants";
+} from "../../components/map/map.constants";
+import { createTagState } from "../tag";
 
 export const openMapModal = (): void => {
   mapState.update((state) => ({
     ...state,
-    showModal: true,
+    showCreateTagModal: false,
+    showMapModal: true,
   }));
 };
 
 export const closeMapModal = (): void => {
   mapState.update((state) => ({
     ...state,
-    showModal: false,
+    showMapModal: false,
   }));
 };
 
@@ -32,7 +34,7 @@ export const openMapModalAndMoveTo = (
   display_mode: DisplayMode
 ): void => {
   mapState.set({
-    showModal: true,
+    showMapModal: true,
     coordinates,
     display_mode: display_mode,
   });

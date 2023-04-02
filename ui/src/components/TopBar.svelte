@@ -1,41 +1,21 @@
 <script lang="ts">
-  import CreateTagItem from "../routes/tags/CreateTagItem.svelte";
-  import type {
-    EntryHash,
-    Record,
-    AgentPubKey,
-    ActionHash,
-    AppAgentClient,
-    NewEntryAction,
-  } from "@holochain/client";
-  import { clientContext } from "../contexts";
-  import { getContext } from "svelte";
-  import { mapState } from "../store/store";
+  import { closeMapModal, openMapModal } from "../store/map/actions.mapState";
+  import type { Coordinates } from "../store/map/type.mapState";
   import {
-    closeMapModal,
-    openMapModal,
-    openMapModalAndMoveTo,
-  } from "../store/actions";
+    closeCreateTagModal,
+    openCreateTagModal,
+  } from "../store/tag/actions.createTag";
+  export let showMapModal: boolean;
+  export let showCreateTagModal: boolean;
+  export let defaultCoordinates: Coordinates;
 
-
-  let showCreateTagModal = false;
-  let showMapModal: boolean;
-  let client: AppAgentClient = (getContext(clientContext) as any).getClient();
-  $: showMapModal
-
-
-  mapState.subscribe((value) => {
-    showMapModal = value.showModal;
-  });
-
-  function handleModalUpdate(event) {
-    showCreateTagModal = event.detail;
-  }
-  const openCreateTagModal = () => {
-    showCreateTagModal = !showCreateTagModal;
-  };
   const toggleMapModal = () => {
     showMapModal ? closeMapModal() : openMapModal();
+  };
+  const toggleCreateTagModal = () => {
+    showCreateTagModal
+      ? closeCreateTagModal()
+      : openCreateTagModal(defaultCoordinates);
   };
 
   // const closeCreateTagModal = (e, force: boolean = false) => {
@@ -48,27 +28,15 @@
   // };
 </script>
 
-
-
-<CreateTagItem
-  on:child-update={handleModalUpdate}
-  {client}
-  showModal={showCreateTagModal}
-/>
-
 <div class="top-bar">
   <h3>ATLAS</h3>
   <div>
-    <button on:click={() => openCreateTagModal()}>Create Tag</button>
+    <button on:click={() => toggleCreateTagModal()}>Create Tag</button>
     <button on:click={() => toggleMapModal()}>Map</button>
   </div>
 </div>
 
 <style>
-  /* body {
-    margin: 0;
-    padding: 0;
-  } */
   .top-bar {
     display: flex;
     justify-content: space-between;
