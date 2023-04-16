@@ -7,16 +7,18 @@
   import type { Snackbar } from "@material/mwc-snackbar";
   import "@material/mwc-textfield";
   import "@material/mwc-textarea";
-  import type { CreateTagForm } from "../types/forms/createTag";
-  import type { FormEntry } from "../types/forms/formEntry";
+  import type { CreateTagForm } from "../types/forms/form.createTag";
+  import type { FormEntry } from "../types/forms/form.formEntry";
+  import type { CreateProfileForm } from "../types/forms/form.createProfile";
 
   let client: AppAgentClient = (getContext(clientContext) as any).getClient();
 
   const dispatch = createEventDispatcher();
 
   export let title: string = "Create Item";
-  export let fields: CreateTagForm; //TODO: fix this
+  export let fields: CreateTagForm | CreateProfileForm; //TODO: fix this
   export let createItemFunction: Function;
+  export let updateStoreFunction: Function;
   export let closeFunction: Function;
   export let itemType: string;
 
@@ -26,23 +28,27 @@
     (key: string) => fields[key].value !== undefined
   );
 
-  async function createItem(e) {
+  const createItem = async (e) => {
     try {
-      const result = await createItemFunction(
-        Object.keys(fields).map(
-          (key: string) => fields[key].value !== undefined
-        )
+      console.log("Fields", fields);
+      const submissionValues = {};
+      Object.keys(fields).map(
+        (key: string) => (submissionValues[key] = fields[key].value)
       );
+
+      console.log("test", submissionValues);
+      const result = await createItemFunction(submissionValues);
+      updateStoreFunction(result);
       dispatch(`${itemType}-created`, result);
       closeFunction(e);
     } catch (e) {
       errorSnackbar.labelText = `Error creating the ${itemType}: ${e.data.data}`;
       errorSnackbar.show();
     }
-  }
+  };
 
   onMount(() => {
-   console.log("fields", fields)
+    console.log("fields", fields);
   });
 </script>
 
@@ -67,18 +73,18 @@
     <div style="display: flex; flex-direction: column">
       <span style="font-size: 18px">{title}</span>
       {#each Object.keys(fields) as field_key (fields[field_key].label)}
-      <div style="margin-bottom: 16px">
-        <mwc-textfield
-          outlined
-          label={fields[field_key].label}
-          value={fields[field_key].value || ''}
-          on:input={(e) => {
-            fields[field_key].value = e.target.value;
-          }}
-          required={fields[field_key].required}
-        />
-      </div>
-    {/each}
+        <div style="margin-bottom: 16px">
+          <mwc-textfield
+            outlined
+            label={fields[field_key].label}
+            value={fields[field_key].value || ""}
+            on:input={(e) => {
+              fields[field_key].value = e.target.value;
+            }}
+            required={fields[field_key].required}
+          />
+        </div>
+      {/each}
 
       <mwc-button
         raised

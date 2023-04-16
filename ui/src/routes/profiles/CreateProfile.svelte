@@ -65,12 +65,15 @@ async function createProfile() {
   ></mwc-button>
 </div> -->
 <script lang="ts">
-  import { getContext } from 'svelte';
-  import type { AppAgentClient, Record, AgentPubKey } from '@holochain/client';
-  import { clientContext } from '../../contexts';
-  import type { Profile } from './types';
-  import GenericModal from '../../components/GenericModal.svelte';
-  import { createEventDispatcher } from 'svelte';
+  import { getContext } from "svelte";
+  import type { AppAgentClient, Record, AgentPubKey } from "@holochain/client";
+  import { clientContext } from "../../contexts";
+  import type { Profile } from "./types";
+  import GenericModal from "../../components/GenericModal.svelte";
+  import { createEventDispatcher } from "svelte";
+  import { getFieldsForCreateProfile } from "./profiles.utils";
+  import type { CreateProfileForm } from "../../types/forms/form.createProfile";
+  import { setClient } from "../../store/client/actions.client";
 
   let client: AppAgentClient = (getContext(clientContext) as any).getClient();
 
@@ -79,39 +82,44 @@ async function createProfile() {
 
   const dispatch = createEventDispatcher();
 
-  async function createProfile(fieldValues) {
+  const createProfile = async (fieldValues: CreateProfileForm) => {
+    console.log("fieldValues", fieldValues);
     const profileEntry: Profile = {
-      user_name: fieldValues["User Name"],
-      owner: owner!,
+      user_name: fieldValues["username"].value,
+      owner: owner,
     };
 
     const record: Record = await client.callZome({
       cap_secret: null,
-      role_name: 'tags',
-      zome_name: 'profiles',
-      fn_name: 'create_profile',
+      role_name: "tags",
+      zome_name: "profiles",
+      fn_name: "create_profile",
       payload: profileEntry,
     });
     return { profileHash: record.signed_action.hashed.hash };
-  }
+  };
 
-  function updateParent() {
-    dispatch('child-update', showModal);
-  }
+  const updateParent = () => {
+    dispatch("child-update", showModal);
+  };
 
-  function closeCreateProfileModal(e, success = false) {
+  const closeCreateProfileModal = (e, success = false) => {
     if (e.target.className === "backdrop" || success) {
       showModal = false;
       updateParent();
     }
-  }
+  };
+  const setStoreClient = (client: AppAgentClient, profile: Profile) => {
+    setClient(client, profile)
+  };
 </script>
 
 {#if showModal}
   <GenericModal
     title="Create Profile"
-    fields={[{ label: "User Name", required: true }]}
+    fields={getFieldsForCreateProfile()}
     createItemFunction={createProfile}
+    updateStoreFunction={setStoreClient}
     closeFunction={closeCreateProfileModal}
     itemType="profile"
   />

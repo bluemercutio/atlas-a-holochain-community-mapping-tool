@@ -6,7 +6,7 @@ import type {
 import type { Profile } from "../routes/profiles/types";
 import { decode } from "@msgpack/msgpack";
 import type { TagItem } from "../routes/tags/types";
-import type { CreateTagForm } from "../types/forms/createTag";
+import type { CreateTagForm } from "../types/forms/form.createTag";
 
 export const getCurrentProfile = async (
   key: AgentPubKey,

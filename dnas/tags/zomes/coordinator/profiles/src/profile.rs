@@ -7,14 +7,11 @@ pub fn create_profile(profile: Profile) -> ExternResult<Record> {
         profile.owner.clone(),
         profile_hash.clone(),
         LinkTypes::OwnerToProfiles,
-        (),
+        vec![],
     )?;
-    let record = get(profile_hash.clone(), GetOptions::default())?
-        .ok_or(
-            wasm_error!(
-                WasmErrorInner::Guest(String::from("Could not find the newly created Profile"))
-            ),
-        )?;
+    let record = get(profile_hash.clone(), GetOptions::default())?.ok_or(wasm_error!(
+        WasmErrorInner::Guest(String::from("Could not find the newly created Profile"))
+    ))?;
     Ok(record)
 }
 #[hdk_extern]
@@ -41,22 +38,17 @@ pub struct UpdateProfileInput {
 }
 #[hdk_extern]
 pub fn update_profile(input: UpdateProfileInput) -> ExternResult<Record> {
-    let updated_profile_hash = update_entry(
-        input.previous_profile_hash.clone(),
-        &input.updated_profile,
-    )?;
+    let updated_profile_hash =
+        update_entry(input.previous_profile_hash.clone(), &input.updated_profile)?;
     create_link(
         input.original_profile_hash.clone(),
         updated_profile_hash.clone(),
         LinkTypes::ProfileUpdates,
-        (),
+        vec![],
     )?;
-    let record = get(updated_profile_hash.clone(), GetOptions::default())?
-        .ok_or(
-            wasm_error!(
-                WasmErrorInner::Guest(String::from("Could not find the newly updated Profile"))
-            ),
-        )?;
+    let record = get(updated_profile_hash.clone(), GetOptions::default())?.ok_or(wasm_error!(
+        WasmErrorInner::Guest(String::from("Could not find the newly updated Profile"))
+    ))?;
     Ok(record)
 }
 #[hdk_extern]
@@ -68,10 +60,7 @@ pub fn get_profiles_for_owner(owner: AgentPubKey) -> ExternResult<Vec<Record>> {
     let links = get_links(owner, LinkTypes::OwnerToProfiles, None)?;
     let get_input: Vec<GetInput> = links
         .into_iter()
-        .map(|link| GetInput::new(
-            ActionHash::from(link.target).into(),
-            GetOptions::default(),
-        ))
+        .map(|link| GetInput::new(ActionHash::from(link.target).into(), GetOptions::default()))
         .collect();
     let records: Vec<Record> = HDK
         .with(|hdk| hdk.borrow().get(get_input))?

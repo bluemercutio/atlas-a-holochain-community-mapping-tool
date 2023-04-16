@@ -3,14 +3,16 @@ use tags_integrity::*;
 #[hdk_extern]
 pub fn create_tag_item(tag_item: TagItem) -> ExternResult<Record> {
     let tag_item_hash = create_entry(&EntryTypes::TagItem(tag_item.clone()))?;
-    let record = get(tag_item_hash.clone(), GetOptions::default())?
-        .ok_or(
-            wasm_error!(
-                WasmErrorInner::Guest(String::from("Could not find the newly created TagItem"))
-            ),
-        )?;
+    let record = get(tag_item_hash.clone(), GetOptions::default())?.ok_or(wasm_error!(
+        WasmErrorInner::Guest(String::from("Could not find the newly created TagItem"))
+    ))?;
     let my_agent_pub_key = agent_info()?.agent_latest_pubkey;
-    create_link(my_agent_pub_key, tag_item_hash.clone(), LinkTypes::AllTags, ())?;
+    create_link(
+        my_agent_pub_key,
+        tag_item_hash.clone(),
+        LinkTypes::AllTags,
+        (),
+    )?;
     Ok(record)
 }
 #[hdk_extern]
@@ -47,12 +49,9 @@ pub fn update_tag_item(input: UpdateTagItemInput) -> ExternResult<Record> {
         LinkTypes::TagItemUpdates,
         (),
     )?;
-    let record = get(updated_tag_item_hash.clone(), GetOptions::default())?
-        .ok_or(
-            wasm_error!(
-                WasmErrorInner::Guest(String::from("Could not find the newly updated TagItem"))
-            ),
-        )?;
+    let record = get(updated_tag_item_hash.clone(), GetOptions::default())?.ok_or(wasm_error!(
+        WasmErrorInner::Guest(String::from("Could not find the newly updated TagItem"))
+    ))?;
     Ok(record)
 }
 #[hdk_extern]

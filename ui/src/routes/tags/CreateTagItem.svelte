@@ -3,7 +3,7 @@
   import type { AppAgentClient } from "@holochain/client";
   import type { TagItem } from "./types";
   import { closeMapModal } from "../../store/map/actions.mapState";
-  import { closeCreateTagModal } from "../../store/tag/actions.createTag";
+  import { closeCreateTagModal } from "../../store/tag/actions.tags";
   import type { Coordinates } from "../../store/map/type.mapState";
   import { createEventDispatcher } from 'svelte';
 

@@ -39,7 +39,7 @@ async function updateProfile() {
       zome_name: 'profiles',
       fn_name: 'update_profile',
       payload: {
-        original_profile_hash: originalProfileHash,
+        original_item_hash: originalProfileHash,
         previous_profile_hash: currentRecord.signed_action.hashed.hash,
         updated_profile: profile
       }

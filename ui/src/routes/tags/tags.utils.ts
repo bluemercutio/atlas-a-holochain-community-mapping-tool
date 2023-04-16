@@ -1,6 +1,6 @@
 import type { Coordinates } from "../../store/map/type.mapState";
 
-import type { CreateTagForm } from "../../types/forms/createTag";
+import type { CreateTagForm } from "../../types/forms/form.createTag";
 
 export const getFieldsForCreateTag = (
   latitude: number,

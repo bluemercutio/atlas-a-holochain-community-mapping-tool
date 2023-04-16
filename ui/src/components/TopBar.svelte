@@ -4,7 +4,7 @@
   import {
     closeCreateTagModal,
     openCreateTagModal,
-  } from "../store/tag/actions.createTag";
+  } from "../store/tag/actions.tags";
   export let showMapModal: boolean;
   export let showCreateTagModal: boolean;
   export let defaultCoordinates: Coordinates;
@@ -37,6 +37,7 @@
 </div>
 
 <style>
+  /*   
   .top-bar {
     display: flex;
     justify-content: space-between;
@@ -50,7 +51,24 @@
     top: 0;
     z-index: 10;
     width: 100%;
-  }
+  } */
+  .top-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 20px;
+  background-color: #333;
+  color: #fff;
+  font-size: 1.2rem;
+  height: 60px;
+  position: sticky; /* Keep this as 'sticky' */
+  top: 0;
+  /* left: 0; */ /* Remove this line */
+  z-index: 10;
+  width: 100%;
+  box-sizing: border-box;
+}
+
   .top-bar button {
     padding: 8px 15px;
     background-color: #555;

@@ -47,3 +47,9 @@ export interface TagItem {
   latitude: string;
   longitude: string;
 }
+
+export interface UpdateTagItem {
+  previous_tag_item_hash: Uint8Array;
+  original_tag_item_hash: Uint8Array;
+  updated_tag_item: TagItem;
+}

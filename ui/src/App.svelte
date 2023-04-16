@@ -1,7 +1,7 @@
 <script lang="ts">
   import AllTags from "./routes/tags/AllTags.svelte";
   import { onMount, setContext } from "svelte";
-  import type {  AppAgentClient } from "@holochain/client";
+  import type { AppAgentClient } from "@holochain/client";
   import { AppAgentWebsocket } from "@holochain/client";
   import "@material/mwc-circular-progress";
   import Map from "./components/map/Map.svelte";
@@ -13,12 +13,12 @@
   import type { Coordinates, DisplayMode } from "./store/map/type.mapState";
   import type { Profile } from "./routes/profiles/types";
   import { createTagState } from "./store/tag";
-  import type { CreateTagState } from "./store/tag/type.createTag";
+  import type { CreateTagState } from "./store/tag/types.tags";
   import GenericModal from "./components/GenericModal.svelte";
   import { setClient } from "./store/client/actions.client";
   import { clientState } from "./store/client";
-  import { getFieldsForCreateTag } from "./routes/tags/utils";
-  import { closeCreateTagModal } from "./store/tag/actions.createTag";
+  import { getFieldsForCreateTag } from "./routes/tags/tags.utils";
+  import { closeCreateTagModal } from "./store/tag/actions.tags";
 
   let client: AppAgentClient | undefined;
   let loading = true;
@@ -86,8 +86,6 @@
     profile = value.profile;
     console.log("CLIENTSTATE Change: ", value);
   });
-
-
 </script>
 
 <main>
@@ -108,15 +106,22 @@
     {#if showCreateTagModal}
       <GenericModal
         title="Create a Tag"
-        fields={getFieldsForCreateTag(createTagCoordinates.latitude, createTagCoordinates.longitude)}
+        fields={getFieldsForCreateTag(
+          createTagCoordinates.latitude,
+          createTagCoordinates.longitude
+        )}
         createItemFunction={createTagItem}
         closeFunction={closeModal}
         itemType="TagItem"
       />
     {/if}
 
-    <div id="content" style="display: flex; flex-direction: column; flex: 1;">
-      <TopBar {showMapModal} {showCreateTagModal} defaultCoordinates={createTagCoordinates} />
+    <div class="content">
+      <TopBar
+        {showMapModal}
+        {showCreateTagModal}
+        defaultCoordinates={createTagCoordinates}
+      />
       <AllTags author={client.myPubKey} />
       <Footer {profile} owner={client.myPubKey} />
     </div>
@@ -126,14 +131,22 @@
 <style>
   main {
     text-align: center;
-    padding: 1em;
+    /* padding: 1em; */ /* Remove this line */
     /* max-width: 240px; */
     margin: 0 auto;
   }
 
-  @media (min-width: 640px) {
+  .content {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    margin-left: 0;
+    top: 100;
+  }
+
+  /* @media (min-width: 640px) {
     main {
       max-width: none;
     }
-  }
+  } */
 </style>

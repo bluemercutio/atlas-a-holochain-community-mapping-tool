@@ -1,3 +1,4 @@
+import type { TagItem } from "../../routes/tags/types";
 import type { Coordinates } from "../map/type.mapState";
 
 export interface CreateTagState {
@@ -5,4 +6,9 @@ export interface CreateTagState {
   name: string;
   description: String;
   coordinates: Coordinates;
+}
+
+export interface TagStore {
+  createTagState: CreateTagState;
+  allTags: TagItem[];
 }
