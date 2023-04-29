@@ -25,7 +25,7 @@
   let errorSnackbar: Snackbar;
 
   $: isFormValid = Object.keys(fields).every(
-    (key: string) => fields[key].value !== undefined
+    (key: string) => fields[key] !== undefined
   );
 
   const createItem = async (e) => {
@@ -33,10 +33,10 @@
       console.log("Fields", fields);
       const submissionValues = {};
       Object.keys(fields).map(
-        (key: string) => (submissionValues[key] = fields[key].value)
+        (key: string) => (submissionValues[key] = fields[key])
       );
 
-      console.log("test", submissionValues);
+      console.log("Submission Values", submissionValues); // Add this line to log the input values
       const result = await createItemFunction(submissionValues);
       updateStoreFunction(result);
       dispatch(`${itemType}-created`, result);
@@ -77,7 +77,7 @@
           <mwc-textfield
             outlined
             label={fields[field_key].label}
-            value={fields[field_key].value || ""}
+            value={fields[field_key] || ""}
             on:input={(e) => {
               fields[field_key].value = e.target.value;
             }}

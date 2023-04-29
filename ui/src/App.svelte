@@ -12,13 +12,16 @@
   import { mapState } from "./store/map";
   import type { Coordinates, DisplayMode } from "./store/map/type.mapState";
   import type { Profile } from "./routes/profiles/types";
-  import { createTagState } from "./store/tag";
-  import type { CreateTagState } from "./store/tag/types.tags";
+  import { CreateTagStore } from "./store/create_tag";
+  import type { CreateTagState } from "./store/create_tag/types.create_tag";
   import GenericModal from "./components/GenericModal.svelte";
   import { setClient } from "./store/client/actions.client";
   import { clientState } from "./store/client";
   import { getFieldsForCreateTag } from "./routes/tags/tags.utils";
-  import { closeCreateTagModal } from "./store/tag/actions.tags";
+  import { closeCreateTagModal } from "./store/create_tag/actions.create_tag";
+  import type { TagItem } from "./routes/tags/types";
+  import { addTag } from "./store/actions.all_tags.ts/actions.all_tags";
+  import CircleMenu from "./components/circle-menu/CircleMenu.svelte";
 
   let client: AppAgentClient | undefined;
   let loading = true;
@@ -66,6 +69,10 @@
     closeCreateTagModal();
   };
 
+  const setStoreTags = (tag: TagItem) => {
+    addTag(tag);
+  };
+
   mapState.subscribe((value) => {
     showMapModal = value.showMapModal;
     mapCoordinates = value.coordinates;
@@ -73,7 +80,8 @@
     console.log("MAPSTATE Change: ", value);
   });
 
-  createTagState.subscribe((value) => {
+  CreateTagStore.subscribe((value) => {
+    console.log("showCreateTagModal", showCreateTagModal);
     showCreateTagModal = value.showCreateTagModal;
     createTagCoordinates = value.coordinates;
     console.log("Default Coordinates: ", createTagCoordinates);
@@ -111,6 +119,7 @@
           createTagCoordinates.longitude
         )}
         createItemFunction={createTagItem}
+        updateStoreFunction={setStoreTags}
         closeFunction={closeModal}
         itemType="TagItem"
       />
@@ -122,6 +131,7 @@
         {showCreateTagModal}
         defaultCoordinates={createTagCoordinates}
       />
+      <CircleMenu></CircleMenu>
       <AllTags author={client.myPubKey} />
       <Footer {profile} owner={client.myPubKey} />
     </div>

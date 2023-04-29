@@ -5,10 +5,6 @@ import type { CreateTagForm } from "../../types/forms/form.createTag";
 
 export const getFieldsForCreateProfile = (): CreateProfileForm => {
   return {
-    username: {
-      label: "username",
-      value: "",
-      required: true,
-    },
+    user_name: "",
   };
 };

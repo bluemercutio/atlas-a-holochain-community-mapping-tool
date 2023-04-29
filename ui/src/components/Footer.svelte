@@ -9,11 +9,8 @@
   export let profile: Profile;
   export let owner: Uint8Array;
 
-  function createProfile() {
-    // code to create a profile
-  }
 
-  function handleModalUpdate(event) {
+  const handleModalUpdate = (event) =>{
     showCreateProfileModal = event.detail;
   }
 

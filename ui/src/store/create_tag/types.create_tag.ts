@@ -8,7 +8,6 @@ export interface CreateTagState {
   coordinates: Coordinates;
 }
 
-export interface TagStore {
-  createTagState: CreateTagState;
+export interface AllTagsStore {
   allTags: TagItem[];
 }

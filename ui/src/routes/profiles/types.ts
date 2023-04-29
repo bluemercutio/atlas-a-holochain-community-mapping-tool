@@ -43,6 +43,10 @@ export type EntryTypes = { type: "Profile" } & Profile;
 
 export interface Profile {
   user_name: string;
-
   owner: AgentPubKey;
+}
+export interface UpdateProfile {
+  previous_profile_item_hash: AgentPubKey;
+  original_profile_item_hash: AgentPubKey;
+  updated_profile_item: Profile;
 }

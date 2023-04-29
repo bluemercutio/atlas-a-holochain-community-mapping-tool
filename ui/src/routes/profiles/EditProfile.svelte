@@ -25,7 +25,7 @@ let errorSnackbar: Snackbar;
 $: userName ;
 $: isProfileValid = true && userName !== undefined;
 
-async function updateProfile() {
+const updateProfile = async()=> {
 
   const profile: Profile = { 
     user_name: userName!,

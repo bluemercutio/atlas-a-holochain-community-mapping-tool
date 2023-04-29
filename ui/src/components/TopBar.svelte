@@ -4,7 +4,7 @@
   import {
     closeCreateTagModal,
     openCreateTagModal,
-  } from "../store/tag/actions.tags";
+  } from "../store/create_tag/actions.create_tag";
   export let showMapModal: boolean;
   export let showCreateTagModal: boolean;
   export let defaultCoordinates: Coordinates;
@@ -18,14 +18,6 @@
       : openCreateTagModal(defaultCoordinates);
   };
 
-  // const closeCreateTagModal = (e, force: boolean = false) => {
-  //   const backdrop = document.querySelector(".backdrop");
-  //   const closeButton = document.querySelector(".close-button");
-  //   console.log(backdrop);
-  //   if (e.target === backdrop || e.target === closeButton || force) {
-  //     showCreateTagModal = false;
-  //   }
-  // };
 </script>
 
 <div class="top-bar">
@@ -37,21 +29,6 @@
 </div>
 
 <style>
-  /*   
-  .top-bar {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 10px 20px;
-    background-color: #333;
-    color: #fff;
-    font-size: 1.2rem;
-    height: 40px;
-    position: sticky;
-    top: 0;
-    z-index: 10;
-    width: 100%;
-  } */
   .top-bar {
   display: flex;
   justify-content: space-between;

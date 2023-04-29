@@ -1,7 +1,3 @@
 export interface CreateProfileForm {
-  username: {
-    label: string;
-    value: string;
-    required: boolean;
-  };
+  user_name: string;
 }

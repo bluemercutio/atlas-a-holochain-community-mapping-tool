@@ -14,14 +14,14 @@ export const getCurrentProfile = async (
 ) => {
   try {
     console.log("Fetch data: ", { key, client });
-    const record = await client.callZome({
+    const record = (await client.callZome({
       cap_secret: null,
       role_name: "tags",
       zome_name: "profiles",
       fn_name: "get_profiles_for_owner",
       payload: key,
-    });
-    if (record) {
+    })) as HRecord[];
+    if (record.length > 0) {
       console.log("Record found. Record: ", record);
       const profile = decode((record[0].entry as any).Present.entry) as Profile;
       console.log("Profile: ", profile);

@@ -25,7 +25,7 @@
   import { mapState } from "../../store/map";
   import MapControls from "../map_controls/MapControls.svelte";
   import { darkDisplayMode, defaultDisplayMode } from "./map.constants";
-  import { openCreateTagModal } from "../../store/tag/actions.tags";
+  import { openCreateTagModal } from "../../store/create_tag/actions.create_tag";
   import { closeMapModal } from "../../store/map/actions.mapState";
   export let author: AgentPubKey;
   export let defaultCoordinates: Coordinates;

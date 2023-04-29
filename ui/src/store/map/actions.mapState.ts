@@ -1,11 +1,9 @@
 import { mapState } from ".";
-import { SMITS } from "./constants.mapState";
 import type { Coordinates, DisplayMode } from "./type.mapState";
 import {
   darkDisplayMode,
   defaultDisplayMode,
 } from "../../components/map/map.constants";
-import { createTagState } from "../tag";
 
 export const openMapModal = (): void => {
   mapState.update((state) => ({
